@@ -27,6 +27,17 @@ const Sidebar = () => {
         Input Node
       </div>
 
+      <div style={{ fontWeight: 'bold', margin: '20px 0 10px' }}>Integrations</div>
+
+      <div
+        className="dndnode"
+        onDragStart={(event) => onDragStart(event, 'gmail')}
+        draggable
+        style={{...nodeStyle, borderColor: '#4285F4'}}
+      >
+        Gmail
+      </div>
+
       <div 
         className="dndnode" 
         onDragStart={(event) => onDragStart(event, 'gemini')} 
