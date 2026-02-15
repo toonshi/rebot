@@ -11,9 +11,9 @@ import 'reactflow/dist/style.css';
 import GeminiNode from './nodes/GeminiNode';
 import Sidebar from './Sidebar';
 
-// FIX 1: Define nodeTypes outside the component to avoid re-render warnings
 const nodeTypes = {
   gemini: GeminiNode,
+  // Add other custom nodes here if needed
 };
 
 let id = 0;
@@ -22,13 +22,12 @@ const getId = () => `node-${id++}`;
 const App = () => {
   const reactFlowWrapper = useRef(null);
   
-  // FIX 2: Ensure initial nodes have access to setNodes if they use it
   const [nodes, setNodes] = useState([
     {
       id: 'node-0',
       type: 'gemini',
       position: { x: 250, y: 100 },
-      data: { label: 'Gemini Node', setNodes: (nds) => setNodes(nds) }
+      data: { label: 'Gemini Node' } 
     },
   ]);
   
@@ -64,8 +63,6 @@ const App = () => {
       data: { 
         label: `${type} node`,
         system: '', // Initialize system field
-        // FIX 3: Explicitly pass the setter function here
-        setNodes: (nds) => setNodes(nds) 
       },
     };
     setNodes((nds) => nds.concat(newNode));
