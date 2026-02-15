@@ -18,11 +18,12 @@ const nodeTypes = {
   // Add other custom nodes here if needed
 };
 
-let id = 0;
-const getId = () => `node-${id++}`;
-
 const App = () => {
   const reactFlowWrapper = useRef(null);
+  const nextId = useRef(1); 
+  const getId = useCallback(() => {
+      return `node-${nextId.current++}`;
+  }, []);
   
   const [nodes, setNodes] = useState([
     {
@@ -47,30 +48,31 @@ const App = () => {
     event.dataTransfer.dropEffect = 'move';
   }, []);
   
-  const onDrop = useCallback((event) => {
-    event.preventDefault();
-    const type = event.dataTransfer.getData('application/reactflow');
-    if (!type) return;
-
-    const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
-    const position = reactFlowInstance.project({
-      x: event.clientX - reactFlowBounds.left,
-      y: event.clientY - reactFlowBounds.top,
-    });
-
-    const newNode = {
-      id: getId(),
-      type,
-      position,
-      data: { 
-        label: `${type} node`,
-        system: '', // Initialize system field
-      },
-    };
-    setNodes((nds) => nds.concat(newNode));
-  }, [reactFlowInstance]);
-
-  const onRun = async () => {
+            const onDrop = useCallback((event) => {
+            event.preventDefault();
+            const type = event.dataTransfer.getData('application/reactflow');
+        
+            if (typeof type === 'undefined' || !type) {
+              return;
+            }
+        
+            const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
+            const position = reactFlowInstance.project({
+              x: event.clientX - reactFlowBounds.left,
+              y: event.clientY - reactFlowBounds.top,
+            });
+        
+            const newNode = {
+              id: getId(),
+              type,
+              position,
+              data: {
+                label: `${type} node`,
+              },
+            };
+        
+            setNodes((nds) => nds.concat(newNode));
+          }, [reactFlowInstance]);  const onRun = async () => {
     setIsLoading(true);
     setExecutionResult(null);
 
