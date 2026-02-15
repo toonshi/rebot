@@ -25,6 +25,16 @@ const GeminiNode = ({ id, data }) => {
         minWidth: '200px',
         boxShadow: '0 4px 10px rgba(0,0,0,0.15)'
     }}>
+      {/* NEW: Variable Name Field */}
+      <div style={{ backgroundColor: '#f1f5f9', padding: '4px', marginBottom: '8px', borderRadius: '4px' }}>
+        <label style={{ fontSize: '8px', fontWeight: 'bold', color: '#64748b' }}>VAR NAME</label>
+        <input 
+          placeholder="e.g. MySummary"
+          onChange={(e) => updateField('varName', e.target.value)}
+          defaultValue={data.varName}
+          style={{ width: '100%', border: 'none', background: 'transparent', fontSize: '10px', outline: 'none' }}
+        />
+      </div>
       <Handle type="target" position={Position.Left} id="input" />
       
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px', borderBottom: '1px solid #eee', paddingBottom: '5px' }}>

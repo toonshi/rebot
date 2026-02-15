@@ -12,16 +12,22 @@ client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 model_name = 'models/gemini-flash-latest'
 
 
-def resolve_variables(text, results_map):
-    """
-    Replaces placeholders like {{node-0.output}} with actual values from results_map.
-    """
-    pattern = r"\{\{(node-\d+)\.(\w+)\}\}"
+def resolve_variables(text, results_map, nodes):
+    # Create a lookup for custom variable names
+    # Example: {'Meeting': 'node-2', 'Summary': 'node-0'}
+    name_to_id = {n.get('data', {}).get('varName'): n['id'] for n in nodes if n.get('data', {}).get('varName')}
+    
+    # Updated regex to match alpha-numeric variable names or standard IDs
+    pattern = r"\{\{([\w\-]+)\.(\w+)\}\}"
     
     def replace_match(match):
-        node_id, field = match.groups()
+        key, field = match.groups()
+        
+        # Check if the key is a custom name; if so, get the real node_id
+        node_id = name_to_id.get(key, key) 
+        
         node_result = results_map.get(node_id, {})
-        return str(node_result.get(field, f"[{node_id} DATA MISSING]"))
+        return str(node_result.get(field, f"[{key} DATA MISSING]"))
 
     return re.sub(pattern, replace_match, text)
 
@@ -82,8 +88,8 @@ def execute_pipeline_task(pipeline_data):
 
         if n_type == 'gemini':
             # Resolve variables in label (prompt) and system fields
-            resolved_prompt = resolve_variables(n_data.get('label', ''), results)
-            resolved_system = resolve_variables(n_data.get('system', ''), results)
+            resolved_prompt = resolve_variables(n_data.get('label', ''), results, nodes)
+            resolved_system = resolve_variables(n_data.get('system', ''), results, nodes)
 
             try:
                 contents = f"{resolved_system}\n\n{resolved_prompt}".strip()
@@ -92,10 +98,23 @@ def execute_pipeline_task(pipeline_data):
             except Exception as e:
                 results[n_id] = {"error": str(e)}
 
+        elif n_type == 'google_meet':
+            # Simulate fetching a transcript based on the Meeting ID/Link
+            meet_id = n_data.get('label', 'unknown-meeting')
+            print(f"Fetching transcript for Meeting: {meet_id}")
+            
+            # This is the "mock" transcript Gemini will summarize
+            mock_transcript = (
+                "Participants: Alice, Bob. "
+                "Alice: We need to finish the 'Sokoline' student platform by Monday. "
+                "Bob: I'm still working on the database, but it should be ready. "
+                "Alice: Okay, let's meet tomorrow at 10 AM to sync."
+            )
+            results[n_id] = {"transcript": mock_transcript, "id": meet_id}
         elif n_type == 'gmail':
             # Resolve the recipient ('to') and the body ('label') using previous node results
-            recipient = resolve_variables(n_data.get('to', ''), results)
-            body = resolve_variables(n_data.get('label', ''), results)
+            recipient = resolve_variables(n_data.get('to', ''), results, nodes)
+            body = resolve_variables(n_data.get('label', ''), results, nodes)
 
             # Mock sending email (no OAuth) — useful for testing variable resolution
             print("--- MOCK GMAIL ACTION ---")
@@ -103,7 +122,7 @@ def execute_pipeline_task(pipeline_data):
             print(f"Body: {body}")
             print("-------------------------")
 
-            results[n_id] = {"status": "sent", "to": recipient}
+            results[n_id] = {"status": "sent", "to": recipient, "body": body}
 
         else:
             results[n_id] = {"output": "Processed non-AI node"}
