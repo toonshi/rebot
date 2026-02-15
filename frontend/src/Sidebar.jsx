@@ -52,9 +52,9 @@ const Sidebar = () => {
 
         {activeTab === 'Integrations' && (
           <div style={nodeListStyle}>
-            <div 
-              onDragStart={(e) => onDragStart(e, 'google_meet')} 
-              draggable 
+            <div
+              onDragStart={(e) => onDragStart(e, 'google_meet')}
+              draggable
               style={{ ...nodeItemStyle, borderColor: '#24a0ed' }}
             >
               <img src="https://upload.wikimedia.org/wikipedia/commons/9/9b/Google_Meet_icon_%282020%29.svg" style={iconStyle} alt="" />
