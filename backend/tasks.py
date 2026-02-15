@@ -7,7 +7,7 @@ from celery_app import celery_app
 
 
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-model_name = 'models/gemini-pro-latest'
+model_name = 'models/gemini-flash-latest'
 
 
 
