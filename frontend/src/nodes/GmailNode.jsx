@@ -41,6 +41,19 @@ const GmailNode = ({ id, data }) => {
         <strong style={{ fontSize: '13px' }}>Gmail</strong>
       </div>
 
+      {/* Variable Name Display */}
+      <div style={{ backgroundColor: '#f1f5f9', padding: '6px', marginBottom: '8px', borderRadius: '4px' }}>
+        <label style={{ fontSize: '8px', fontWeight: 'bold', color: '#64748b', display: 'block' }}>
+          REFERENCE AS:
+        </label>
+        <input 
+          placeholder="Variable Name"
+          onChange={(e) => updateField('varName', e.target.value)}
+          defaultValue={data.varName}
+          style={{ width: '100%', border: 'none', background: 'transparent', fontSize: '11px', fontWeight: 'bold', color: '#0f172a', outline: 'none' }}
+        />
+      </div>
+
       <div style={{ marginBottom: '8px' }}>
         <label style={{ fontSize: '9px', fontWeight: 'bold', color: '#888' }}>RECIPIENT</label>
         <input 

@@ -10,12 +10,15 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import GeminiNode from './nodes/GeminiNode';
 import GmailNode from './nodes/GmailNode';
+import InputNode from './nodes/InputNode';
+import MeetNode from './nodes/MeetNode';
 import Sidebar from './Sidebar';
 
 const nodeTypes = {
   gemini: GeminiNode,
-  gmail: GmailNode, // Added GmailNode to nodeTypes
-  // Add other custom nodes here if needed
+  gmail: GmailNode,
+  input: InputNode,
+  google_meet: MeetNode,
 };
 
 const App = () => {
@@ -48,31 +51,40 @@ const App = () => {
     event.dataTransfer.dropEffect = 'move';
   }, []);
   
-            const onDrop = useCallback((event) => {
-            event.preventDefault();
-            const type = event.dataTransfer.getData('application/reactflow');
-        
-            if (typeof type === 'undefined' || !type) {
-              return;
-            }
-        
-            const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
-            const position = reactFlowInstance.project({
-              x: event.clientX - reactFlowBounds.left,
-              y: event.clientY - reactFlowBounds.top,
-            });
-        
-            const newNode = {
-              id: getId(),
-              type,
-              position,
-              data: {
-                label: `${type} node`,
-              },
-            };
-        
-            setNodes((nds) => nds.concat(newNode));
-          }, [reactFlowInstance]);  const onRun = async () => {
+  const onDrop = useCallback((event) => {
+    event.preventDefault();
+    const type = event.dataTransfer.getData('application/reactflow');
+
+    if (typeof type === 'undefined' || !type) {
+      return;
+    }
+
+    const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
+    const position = reactFlowInstance.project({
+      x: event.clientX - reactFlowBounds.left,
+      y: event.clientY - reactFlowBounds.top,
+    });
+
+    // Generate human-readable default names based on type
+    const defaultNames = {
+      gemini: 'Summary',
+      gmail: 'Email',
+      google_meet: 'Meeting',
+      input: 'Query'
+    };
+
+    const newNode = {
+      id: getId(),
+      type,
+      position,
+      data: {
+        label: '',
+        varName: `${defaultNames[type] || 'Node'}_${nextId.current}`,
+      },
+    };
+
+    setNodes((nds) => nds.concat(newNode));
+  }, [reactFlowInstance, nextId]);  const onRun = async () => {
     setIsLoading(true);
     setExecutionResult(null);
 

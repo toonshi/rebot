@@ -12,6 +12,7 @@ const Sidebar = () => {
 
   return (
     <aside style={sidebarContainerStyle}>
+      {/* Tab Navigation */}
       <div style={tabHeaderStyle}>
         {tabs.map((tab) => (
           <button
@@ -28,15 +29,24 @@ const Sidebar = () => {
         ))}
       </div>
 
+      {/* Node List Area */}
       <div style={contentAreaStyle}>
+        
+        {/* Tab 1: General */}
         {activeTab === 'General' && (
           <div style={nodeListStyle}>
-            <div onDragStart={(e) => onDragStart(e, 'default')} draggable style={nodeItemStyle}>
-              Standard Node
+            <div 
+              onDragStart={(e) => onDragStart(e, 'input')} 
+              draggable 
+              style={{ ...nodeItemStyle, borderColor: '#64748b' }}
+            >
+              <div style={iconBoxStyle('#64748b')}>→</div>
+              Input / Query
             </div>
           </div>
         )}
 
+        {/* Tab 2: LLMs */}
         {activeTab === 'LLMs' && (
           <div style={nodeListStyle}>
             <div 
@@ -44,20 +54,29 @@ const Sidebar = () => {
               draggable 
               style={{ ...nodeItemStyle, borderColor: '#fbbf24' }}
             >
-              <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Google_Gemini_logo.svg" style={iconStyle} alt="" />
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Google_Gemini_logo.svg" 
+                style={iconStyle} 
+                alt="Gemini" 
+              />
               Gemini AI
             </div>
           </div>
         )}
 
+        {/* Tab 3: Integrations */}
         {activeTab === 'Integrations' && (
           <div style={nodeListStyle}>
-            <div
-              onDragStart={(e) => onDragStart(e, 'google_meet')}
-              draggable
+            <div 
+              onDragStart={(e) => onDragStart(e, 'google_meet')} 
+              draggable 
               style={{ ...nodeItemStyle, borderColor: '#24a0ed' }}
             >
-              <img src="https://upload.wikimedia.org/wikipedia/commons/9/9b/Google_Meet_icon_%282020%29.svg" style={iconStyle} alt="" />
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/9/9b/Google_Meet_icon_%282020%29.svg" 
+                style={iconStyle} 
+                alt="Meet" 
+              />
               Google Meet
             </div>
             <div 
@@ -65,7 +84,11 @@ const Sidebar = () => {
               draggable 
               style={{ ...nodeItemStyle, borderColor: '#ea4335' }}
             >
-              <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" style={iconStyle} alt="" />
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" 
+                style={iconStyle} 
+                alt="Gmail" 
+              />
               Gmail
             </div>
           </div>
@@ -75,13 +98,74 @@ const Sidebar = () => {
   );
 };
 
-// Styles to match the sleek "Vision" UI
-const sidebarContainerStyle = { width: '260px', borderRight: '1px solid #e2e8f0', background: '#f8fafc', padding: '15px' };
-const tabHeaderStyle = { display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '1px solid #e2e8f0' };
-const tabButtonStyle = { background: 'none', border: 'none', padding: '8px 4px', cursor: 'pointer', fontSize: '12px', fontWeight: '600' };
-const nodeListStyle = { display: 'flex', flexDirection: 'column', gap: '10px' };
-const nodeItemStyle = { padding: '10px', border: '1px solid #cbd5e1', borderRadius: '6px', background: '#fff', cursor: 'grab', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' };
-const iconStyle = { width: '16px', height: '16px' };
-const contentAreaStyle = { flexGrow: 1, padding: '15px', overflowY: 'auto' };
+// --- Styles ---
 
+const sidebarContainerStyle = { 
+  width: '260px', 
+  borderRight: '1px solid #e2e8f0', 
+  background: '#f8fafc', 
+  padding: '15px',
+  height: '100%'
+};
+
+const tabHeaderStyle = { 
+  display: 'flex', 
+  gap: '10px', 
+  marginBottom: '20px', 
+  borderBottom: '1px solid #e2e8f0' 
+};
+
+const tabButtonStyle = { 
+  background: 'none', 
+  border: 'none', 
+  padding: '8px 4px', 
+  cursor: 'pointer', 
+  fontSize: '12px', 
+  fontWeight: '600',
+  transition: 'all 0.2s ease'
+};
+
+const contentAreaStyle = {
+  marginTop: '10px'
+};
+
+const nodeListStyle = { 
+  display: 'flex', 
+  flexDirection: 'column', 
+  gap: '12px' 
+};
+
+const nodeItemStyle = { 
+  padding: '12px', 
+  border: '1px solid #cbd5e1', 
+  borderRadius: '8px', 
+  background: '#fff', 
+  cursor: 'grab', 
+  fontSize: '13px', 
+  display: 'flex', 
+  alignItems: 'center', 
+  gap: '10px',
+  boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+  transition: 'transform 0.1s ease'
+};
+
+const iconStyle = { 
+  width: '18px', 
+  height: '18px' 
+};
+
+const iconBoxStyle = (color) => ({
+  width: '18px',
+  height: '18px',
+  backgroundColor: color,
+  borderRadius: '4px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  color: 'white',
+  fontSize: '11px',
+  fontWeight: 'bold'
+});
+
+// FIX: Ensure the default export is present
 export default Sidebar;
