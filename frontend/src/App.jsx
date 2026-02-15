@@ -9,10 +9,12 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import GeminiNode from './nodes/GeminiNode';
+import GmailNode from './nodes/GmailNode';
 import Sidebar from './Sidebar';
 
 const nodeTypes = {
   gemini: GeminiNode,
+  gmail: GmailNode, // Added GmailNode to nodeTypes
   // Add other custom nodes here if needed
 };
 
