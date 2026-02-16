@@ -27,12 +27,15 @@ def resolve_variables(text, results_map, nodes):
     
     def replace_match(match):
         key, field = match.groups()
+        print(f"DEBUG: resolve_variables - Matched: {repr(match.group(0))}, Extracted key: {repr(key)}, field: {repr(field)}")
         
         # Check if the key is a custom name; if so, get the real node_id
         node_id = name_to_id.get(key, key) 
         
         node_result = results_map.get(node_id, {})
-        return str(node_result.get(field, f"[{key} DATA MISSING]"))
+        replacement_value = str(node_result.get(field, f"[{key} DATA MISSING]"))
+        print(f"DEBUG: resolve_variables - Replacing {repr(match.group(0))} with {repr(replacement_value)}")
+        return replacement_value
 
     return re.sub(pattern, replace_match, text)
 
@@ -92,6 +95,9 @@ def execute_pipeline_task(pipeline_data):
         print(f"Executing Node {n_id} ({n_type})...")
 
         if n_type == 'gemini':
+            # Debugging print: raw prompt received from frontend
+            print(f"DEBUG: Gemini node ({n_id}) raw prompt (n_data.label): {repr(n_data.get('label', ''))}")
+
             # Resolve variables in label (prompt) and system fields
             resolved_prompt = resolve_variables(n_data.get('label', ''), results, nodes)
             resolved_system = resolve_variables(n_data.get('system', ''), results, nodes)
