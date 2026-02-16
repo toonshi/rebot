@@ -1,0 +1,49 @@
+/* Container for the textarea */
+.mentions-input__control {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* The actual textarea where you type */
+.mentions-input__highlighter {
+  padding: 9px;
+  border: 1px solid transparent;
+}
+
+.mentions-input__input {
+  padding: 9px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  outline: none;
+}
+
+/* The Dropdown Menu that appears after typing @ */
+.mentions-input__suggestions {
+  background-color: white !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+  font-size: 12px !important;
+  overflow: hidden !important;
+}
+
+/* Individual items in the @ list */
+.mentions-input__suggestions__item {
+  padding: 8px 12px !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+}
+
+.mentions-input__suggestions__item--focused {
+  background-color: #eff6ff !important; /* Light blue highlight */
+  color: #3b82f6 !important;
+}
+
+/* The "Pill" look inside the text after selection */
+.mentions-input__highlighter__mention {
+  background-color: #dbeafe;
+  color: #1e40af;
+  border-radius: 4px;
+  padding: 0 2px;
+  font-weight: 600;
+}

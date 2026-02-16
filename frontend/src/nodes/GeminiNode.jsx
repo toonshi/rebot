@@ -1,57 +1,36 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
 import NodeMentionsInput from '../components/NodeMentionsInput';
-import useNodeLineage from '../hooks/useNodeLineage'; // Import the new hook
+import useNodeLineage from '../hooks/useNodeLineage';
+import useSmartSuggestions from '../hooks/useSmartSuggestions'; // Import the new hook
 
-const GeminiNode = ({ id, data }) => {
+const GeminiNode = ({ id, data, type }) => { // Added 'type' prop
   const { setNodes } = useReactFlow();
   const parents = useNodeLineage(id);
-  const [showTemplateOffer, setShowTemplateOffer] = useState(false);
+
+  // Use the new custom hook for smart suggestions
+  const activeSuggestions = useSmartSuggestions(id, type, data, parents);
 
   // A generic updater for any field in this node
   const updateField = (field, value) => {
+    console.log(`[GeminiNode-${id}] updateField: Attempting to set field '${field}' to:`, value);
     setNodes((nds) =>
       nds.map((node) => {
         if (node.id === id) {
-          return { ...node, data: { ...node.data, [field]: value } };
+          const newNodeData = { ...node.data, [field]: value };
+          console.log(`[GeminiNode-${id}] updateField: New node data will be:`, newNodeData);
+          return { ...node, data: newNodeData };
         }
         return node;
       })
     );
   };
 
-  // Log label changes for debugging
-  useEffect(() => {
-    console.log(`GeminiNode ${id}: data.label updated to:`, data.label);
-  }, [data.label]);
-
-  // Trigger template offer if a new Meeting node is connected
-  useEffect(() => {
-    const hasMeetingParent = parents.some(p => p.type === 'google_meet');
-    if (hasMeetingParent && !data.label) {
-      setShowTemplateOffer(true);
+  // The applySuggestion now accepts the suggestion object
+  const applySuggestion = (suggestion) => {
+    if (suggestion && suggestion.template) {
+      updateField(suggestion.targetField, suggestion.template);
     }
-  }, [parents.length, data.label]);
-
-  const applyTemplate = () => {
-    console.log('applyTemplate called for node:', id);
-    console.log('Parents detected:', parents);
-    const meeting = parents.find(p => p.type === 'google_meet');
-    if (!meeting) {
-      console.log('No google_meet parent found.');
-      return;
-    }
-    console.log('Found google_meet parent:', meeting);
-    const template = `Summarize this meeting transcript: @${meeting.varName}.transcript and list the action items.`;
-    console.log('Template generated:', template);
-    console.log('Current label before update:', data.label);
-
-    // Convert the template to the backend-expected format
-    const resolvedTemplate = template.replace(`@${meeting.varName}.transcript`, `{{${meeting.varName}.transcript}}`);
-    
-    updateField('label', resolvedTemplate);
-    setShowTemplateOffer(false);
-    console.log('Template applied. New label should be:', resolvedTemplate);
   };
 
   return (
@@ -63,8 +42,8 @@ const GeminiNode = ({ id, data }) => {
         minWidth: '200px',
         boxShadow: '0 4px 10px rgba(0,0,0,0.15)'
     }}>
-      {showTemplateOffer && (
-        <div className="template-toast" onClick={applyTemplate} style={{
+      {activeSuggestions.map(suggestion => (
+        <div key={`${id}-${suggestion.type}`} className="template-toast" onClick={() => applySuggestion(suggestion)} style={{
           position: 'absolute',
           top: '-35px',
           left: '50%',
@@ -79,9 +58,9 @@ const GeminiNode = ({ id, data }) => {
           boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
           zIndex: 10
         }}>
-          ✨ Auto-fill summary template?
+          {suggestion.text}
         </div>
-      )}
+      ))}
       {/* NEW: Variable Name Field */}
       <div style={{ backgroundColor: '#f1f5f9', padding: '4px', marginBottom: '8px', borderRadius: '4px' }}>
         <label style={{ fontSize: '8px', fontWeight: 'bold', color: '#64748b' }}>VAR NAME</label>

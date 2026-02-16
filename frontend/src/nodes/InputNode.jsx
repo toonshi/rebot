@@ -1,5 +1,6 @@
 import React from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
+import NodeMentionsInput from '../components/NodeMentionsInput';
 
 const InputNode = ({ id, data }) => {
   const { setNodes } = useReactFlow();
@@ -40,18 +41,10 @@ const InputNode = ({ id, data }) => {
       
       <div style={{ fontSize: '10px', color: '#666' }}>
         <label>Field Name: <strong>Query</strong></label>
-        <textarea 
+        <NodeMentionsInput 
           placeholder="Enter data here..." 
-          onChange={(e) => updateField('label', e.target.value)} // Refactored to use updateField
-          defaultValue={data.label}
-          style={{ 
-            width: '100%', 
-            fontSize: '11px', 
-            marginTop: '8px', 
-            borderRadius: '4px',
-            border: '1px solid #e2e8f0',
-            padding: '4px'
-          }}
+          value={data.label}
+          onChange={(event, newValue) => updateField('label', newValue)}
         />
       </div>
 

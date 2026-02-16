@@ -1,5 +1,6 @@
 import React from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
+import NodeMentionsInput from '../components/NodeMentionsInput';
 
 const GmailNode = ({ id, data }) => {
   const { setNodes } = useReactFlow();
@@ -41,34 +42,23 @@ const GmailNode = ({ id, data }) => {
         <strong style={{ fontSize: '13px' }}>Gmail</strong>
       </div>
 
-      {/* Variable Name Display */}
-      <div style={{ backgroundColor: '#f1f5f9', padding: '6px', marginBottom: '8px', borderRadius: '4px' }}>
-        <label style={{ fontSize: '8px', fontWeight: 'bold', color: '#64748b', display: 'block' }}>
-          REFERENCE AS:
-        </label>
-        <input 
-          placeholder="Variable Name"
-          onChange={(e) => updateField('varName', e.target.value)}
-          defaultValue={data.varName}
-          style={{ width: '100%', border: 'none', background: 'transparent', fontSize: '11px', fontWeight: 'bold', color: '#0f172a', outline: 'none' }}
-        />
-      </div>
-
       <div style={{ marginBottom: '8px' }}>
         <label style={{ fontSize: '9px', fontWeight: 'bold', color: '#888' }}>RECIPIENT</label>
-        <input 
+        <NodeMentionsInput 
+          nodeId={id}
           placeholder="email@example.com" 
-          onChange={(e) => updateField('to', e.target.value)}
-          style={{ width: '100%', fontSize: '10px', padding: '4px' }}
+          value={data.to}
+          onChange={(event, newValue) => updateField('to', newValue)}
         />
       </div>
 
       <div>
         <label style={{ fontSize: '9px', fontWeight: 'bold', color: '#888' }}>BODY</label>
-        <textarea 
-          placeholder="Use {{node-id.output}} to reference AI" 
-          onChange={(e) => updateField('label', e.target.value)}
-          style={{ width: '100%', fontSize: '10px', height: '60px', padding: '4px' }}
+        <NodeMentionsInput 
+          nodeId={id}
+          placeholder="Use @ to reference connected nodes" 
+          value={data.body}
+          onChange={(event, newValue) => updateField('body', newValue)}
         />
       </div>
       
