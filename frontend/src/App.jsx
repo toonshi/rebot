@@ -167,7 +167,27 @@ const App = () => {
   return (
     <div style={{ display: 'flex', width: '100vw', height: '100vh', position: 'relative' }}>
       <ReactFlowProvider>
-        <Sidebar />
+        {showSidebar && <ProjectSidebar onLoadPipeline={loadPipeline} />}
+        
+        <button 
+          onClick={() => setShowSidebar(!showSidebar)}
+          style={{
+            position: 'absolute',
+            top: '20px',
+            left: '20px',
+            zIndex: 10,
+            padding: '10px 15px',
+            backgroundColor: '#6c757d',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontSize: '12px'
+          }}
+        >
+          {showSidebar ? '← Hide' : '→ Projects'}
+        </button>
         
         <button 
           onClick={onRun}
