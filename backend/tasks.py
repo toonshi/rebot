@@ -2,6 +2,7 @@ import os
 import re
 from collections import deque
 import google.genai as genai
+from motor.motor_asyncio import AsyncIOMotorClient
 
 from celery_app import celery_app
 
@@ -10,6 +11,10 @@ from celery_app import celery_app
 
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 model_name = 'models/gemini-flash-latest'
+
+# MongoDB connection setup
+mongo_client = AsyncIOMotorClient("mongodb://mongodb:27017")
+db = mongo_client.vision_db
 
 
 def resolve_variables(text, results_map, nodes):
