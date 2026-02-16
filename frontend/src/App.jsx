@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import ReactFlow, { 
   addEdge, 
   Background, 
@@ -42,6 +42,10 @@ const App = () => {
   const [executionResult, setExecutionResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [lastSavedTime, setLastSavedTime] = useState(null);
+  const [showSidebar, setShowSidebar] = useState(true);
+
+
+
 
 
   const onNodesChange = useCallback((changes) => setNodes((nds) => applyNodeChanges(changes, nds)), []);
@@ -154,12 +158,42 @@ const App = () => {
     }
   };
 
+  const loadPipeline = useCallback((pipeline) => {
+    // Set the nodes and edges back into the React Flow state
+    setNodes(pipeline.nodes || []);
+    setEdges(pipeline.edges || []);
+    setLastSavedTime(new Date(pipeline.saved_at).toLocaleString());
+    
+    // Close the sidebar if necessary
+    setShowSidebar(false);
+  }, [setNodes, setEdges, setLastSavedTime, setShowSidebar]);
+
 
 
   return (
     <div style={{ display: 'flex', width: '100vw', height: '100vh', position: 'relative' }}>
       <ReactFlowProvider>
-        <Sidebar />
+        {showSidebar && <Sidebar onLoadPipeline={loadPipeline} />}
+        
+        <button 
+          onClick={() => setShowSidebar(!showSidebar)}
+          style={{
+            position: 'absolute',
+            top: '20px',
+            left: '20px',
+            zIndex: 10,
+            padding: '10px 15px',
+            backgroundColor: '#6c757d',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontSize: '12px'
+          }}
+        >
+          {showSidebar ? '← Hide' : '→ Show Nodes'}
+        </button>
         
         <button 
           onClick={onRun}

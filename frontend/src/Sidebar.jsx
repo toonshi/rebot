@@ -1,9 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const Sidebar = () => {
+const Sidebar = ({ onLoadPipeline }) => {
   const [activeTab, setActiveTab] = useState('General');
 
-  const tabs = ['General', 'LLMs', 'Integrations'];
+  const tabs = ['General', 'LLMs', 'Integrations', 'Your Projects'];
+
+  const [pipelines, setPipelines] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (activeTab === 'Your Projects') {
+      setLoading(true);
+      fetch('http://localhost:8000/pipelines')
+        .then(res => res.json())
+        .then(data => {
+          setPipelines(data);
+          setLoading(false);
+        })
+        .catch(error => {
+          console.error("Failed to load pipelines:", error);
+          setLoading(false);
+        });
+    }
+  }, [activeTab]);
 
   const onDragStart = (event, nodeType) => {
     event.dataTransfer.setData('application/reactflow', nodeType);
@@ -91,6 +110,30 @@ const Sidebar = () => {
               />
               Gmail
             </div>
+          </div>
+        )}
+
+        {/* Tab 4: Your Projects */}
+        {activeTab === 'Your Projects' && (
+          <div style={nodeListStyle}>
+            <h3>Your Projects</h3>
+            {loading ? (
+              <p style={{ color: '#94a3b8', fontSize: '12px' }}>Loading projects...</p>
+            ) : pipelines.length === 0 ? (
+              <p style={{ color: '#94a3b8', fontSize: '12px' }}>No projects saved yet.</p>
+            ) : (
+              pipelines.map((p) => (
+                <div key={p._id} className="project-item" onClick={() => onLoadPipeline(p)}>
+                  <strong>{p.name}</strong>
+                  <span>{p.nodes.length} nodes</span>
+                  {p.saved_at && (
+                    <span style={{ fontSize: '9px', color: '#cbd5e1', display: 'block', marginTop: '4px' }}>
+                      {new Date(p.saved_at).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
+              ))
+            )}
           </div>
         )}
       </div>
