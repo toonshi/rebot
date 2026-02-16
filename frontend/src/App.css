@@ -40,3 +40,49 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Project Sidebar Styles */
+.project-sidebar {
+  width: 250px;
+  background: white;
+  border-right: 1px solid #e2e8f0;
+  height: 100vh;
+  padding: 20px;
+  overflow-y: auto;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.project-sidebar h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #1e293b;
+}
+
+.project-item {
+  padding: 12px;
+  border: 1px solid #f1f5f9;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #f8fafc;
+}
+
+.project-item:hover {
+  background: #f1f5f9;
+  border-color: #3b82f6;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+}
+
+.project-item strong {
+  display: block;
+  font-size: 14px;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.project-item span {
+  font-size: 10px;
+  color: #94a3b8;
+}
