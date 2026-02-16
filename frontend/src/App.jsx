@@ -159,7 +159,7 @@ const App = () => {
   return (
     <div style={{ display: 'flex', width: '100vw', height: '100vh', position: 'relative' }}>
       <ReactFlowProvider>
-        <Sidebar onDragStart={onDragStart} />
+        <Sidebar />
         
         <button 
           onClick={onRun}
