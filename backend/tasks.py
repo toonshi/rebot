@@ -114,7 +114,7 @@ def execute_pipeline_task(pipeline_data):
         elif n_type == 'gmail':
             # Resolve the recipient ('to') and the body ('label') using previous node results
             recipient = resolve_variables(n_data.get('to', ''), results, nodes)
-            body = resolve_variables(n_data.get('label', ''), results, nodes)
+            body = resolve_variables(n_data.get('body', ''), results, nodes)
 
             # Mock sending email (no OAuth) — useful for testing variable resolution
             print("--- MOCK GMAIL ACTION ---")
