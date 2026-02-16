@@ -9,26 +9,31 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import GeminiNode from './nodes/GeminiNode';
+import GmailNode from './nodes/GmailNode';
+import InputNode from './nodes/InputNode';
+import MeetNode from './nodes/MeetNode';
 import Sidebar from './Sidebar';
 
-// FIX 1: Define nodeTypes outside the component to avoid re-render warnings
 const nodeTypes = {
   gemini: GeminiNode,
+  gmail: GmailNode,
+  input: InputNode,
+  google_meet: MeetNode,
 };
-
-let id = 0;
-const getId = () => `node-${id++}`;
 
 const App = () => {
   const reactFlowWrapper = useRef(null);
+  const nextId = useRef(1); 
+  const getId = useCallback(() => {
+      return `node-${nextId.current++}`;
+  }, []);
   
-  // FIX 2: Ensure initial nodes have access to setNodes if they use it
   const [nodes, setNodes] = useState([
     {
       id: 'node-0',
       type: 'gemini',
       position: { x: 250, y: 100 },
-      data: { label: 'Gemini Node', setNodes: (nds) => setNodes(nds) }
+      data: { label: 'Gemini Node' } 
     },
   ]);
   
@@ -49,7 +54,10 @@ const App = () => {
   const onDrop = useCallback((event) => {
     event.preventDefault();
     const type = event.dataTransfer.getData('application/reactflow');
-    if (!type) return;
+
+    if (typeof type === 'undefined' || !type) {
+      return;
+    }
 
     const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
     const position = reactFlowInstance.project({
@@ -57,21 +65,26 @@ const App = () => {
       y: event.clientY - reactFlowBounds.top,
     });
 
+    // Generate human-readable default names based on type
+    const defaultNames = {
+      gemini: 'Summary',
+      gmail: 'Email',
+      google_meet: 'Meeting',
+      input: 'Query'
+    };
+
     const newNode = {
       id: getId(),
       type,
       position,
-      data: { 
-        label: `${type} node`,
-        system: '', // Initialize system field
-        // FIX 3: Explicitly pass the setter function here
-        setNodes: (nds) => setNodes(nds) 
+      data: {
+        label: '',
+        varName: `${defaultNames[type] || 'Node'}_${nextId.current}`,
       },
     };
-    setNodes((nds) => nds.concat(newNode));
-  }, [reactFlowInstance]);
 
-  const onRun = async () => {
+    setNodes((nds) => nds.concat(newNode));
+  }, [reactFlowInstance, nextId]);  const onRun = async () => {
     setIsLoading(true);
     setExecutionResult(null);
 

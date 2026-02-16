@@ -1,63 +1,171 @@
-import react from 'react';
+import React, { useState } from 'react';
 
 const Sidebar = () => {
-    const onDragStart = (event, nodeType) => {
-        event.dataTransfer.setData('application/reactflow', nodeType);
-        event.dataTransfer.effectAllowed = 'move';
-    };
+  const [activeTab, setActiveTab] = useState('General');
 
+  const tabs = ['General', 'LLMs', 'Integrations'];
 
+  const onDragStart = (event, nodeType) => {
+    event.dataTransfer.setData('application/reactflow', nodeType);
+    event.dataTransfer.effectAllowed = 'move';
+  };
 
   return (
-    <aside style={{
-      width: '200px',
-      borderRight: '1px solid #eee',
-      padding: '15px 10px',
-      fontSize: '12px',
-      background: '#fcfcfc'
-    }}>
-      <div style={{ fontWeight: 'bold', marginBottom: '10px' }}>Components</div>
-      
-      <div 
-        className="dndnode input" 
-        onDragStart={(event) => onDragStart(event, 'input')} 
-        draggable
-        style={nodeStyle}
-      >
-        Input Node
+    <aside style={sidebarContainerStyle}>
+      {/* Tab Navigation */}
+      <div style={tabHeaderStyle}>
+        {tabs.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            style={{
+              ...tabButtonStyle,
+              borderBottom: activeTab === tab ? '2px solid #3b82f6' : 'none',
+              color: activeTab === tab ? '#3b82f6' : '#64748b',
+            }}
+          >
+            {tab}
+          </button>
+        ))}
       </div>
 
-      <div 
-        className="dndnode" 
-        onDragStart={(event) => onDragStart(event, 'gemini')} 
-        draggable
-        style={{...nodeStyle, borderColor: '#ffcc00'}}
-      >
-        Gemini AI
-      </div>
+      {/* Node List Area */}
+      <div style={contentAreaStyle}>
+        
+        {/* Tab 1: General */}
+        {activeTab === 'General' && (
+          <div style={nodeListStyle}>
+            <div 
+              onDragStart={(e) => onDragStart(e, 'input')} 
+              draggable 
+              style={{ ...nodeItemStyle, borderColor: '#64748b' }}
+            >
+              <div style={iconBoxStyle('#64748b')}>→</div>
+              Input / Query
+            </div>
+          </div>
+        )}
 
-      <div 
-        className="dndnode output" 
-        onDragStart={(event) => onDragStart(event, 'output')} 
-        draggable
-        style={nodeStyle}
-      >
-        Output Node
+        {/* Tab 2: LLMs */}
+        {activeTab === 'LLMs' && (
+          <div style={nodeListStyle}>
+            <div 
+              onDragStart={(e) => onDragStart(e, 'gemini')} 
+              draggable 
+              style={{ ...nodeItemStyle, borderColor: '#fbbf24' }}
+            >
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Google_Gemini_logo.svg" 
+                style={iconStyle} 
+                alt="Gemini" 
+              />
+              Gemini AI
+            </div>
+          </div>
+        )}
+
+        {/* Tab 3: Integrations */}
+        {activeTab === 'Integrations' && (
+          <div style={nodeListStyle}>
+            <div 
+              onDragStart={(e) => onDragStart(e, 'google_meet')} 
+              draggable 
+              style={{ ...nodeItemStyle, borderColor: '#24a0ed' }}
+            >
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/9/9b/Google_Meet_icon_%282020%29.svg" 
+                style={iconStyle} 
+                alt="Meet" 
+              />
+              Google Meet
+            </div>
+            <div 
+              onDragStart={(e) => onDragStart(e, 'gmail')} 
+              draggable 
+              style={{ ...nodeItemStyle, borderColor: '#ea4335' }}
+            >
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" 
+                style={iconStyle} 
+                alt="Gmail" 
+              />
+              Gmail
+            </div>
+          </div>
+        )}
       </div>
     </aside>
   );
 };
 
-const nodeStyle = {
-  height: '20px',
-  padding: '4px',
-  border: '1px solid #1a192b',
-  borderRadius: '2px',
-  marginBottom: '10px',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  cursor: 'grab'
+// --- Styles ---
+
+const sidebarContainerStyle = { 
+  width: '260px', 
+  borderRight: '1px solid #e2e8f0', 
+  background: '#f8fafc', 
+  padding: '15px',
+  height: '100%'
 };
 
+const tabHeaderStyle = { 
+  display: 'flex', 
+  gap: '10px', 
+  marginBottom: '20px', 
+  borderBottom: '1px solid #e2e8f0' 
+};
+
+const tabButtonStyle = { 
+  background: 'none', 
+  border: 'none', 
+  padding: '8px 4px', 
+  cursor: 'pointer', 
+  fontSize: '12px', 
+  fontWeight: '600',
+  transition: 'all 0.2s ease'
+};
+
+const contentAreaStyle = {
+  marginTop: '10px'
+};
+
+const nodeListStyle = { 
+  display: 'flex', 
+  flexDirection: 'column', 
+  gap: '12px' 
+};
+
+const nodeItemStyle = { 
+  padding: '12px', 
+  border: '1px solid #cbd5e1', 
+  borderRadius: '8px', 
+  background: '#fff', 
+  cursor: 'grab', 
+  fontSize: '13px', 
+  display: 'flex', 
+  alignItems: 'center', 
+  gap: '10px',
+  boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+  transition: 'transform 0.1s ease'
+};
+
+const iconStyle = { 
+  width: '18px', 
+  height: '18px' 
+};
+
+const iconBoxStyle = (color) => ({
+  width: '18px',
+  height: '18px',
+  backgroundColor: color,
+  borderRadius: '4px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  color: 'white',
+  fontSize: '11px',
+  fontWeight: 'bold'
+});
+
+// FIX: Ensure the default export is present
 export default Sidebar;
