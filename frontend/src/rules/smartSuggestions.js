@@ -24,7 +24,7 @@ const smartSuggestions = [
       type: 'geminiTemplateOffer',
       params: {
         text: '✨ Auto-fill summary template?',
-        template: 'Summarize this meeting transcript: {{meetingParent.varName}}.transcript and list the action items.',
+        template: 'Summarize this meeting transcript: {{meetingParent.id}}.transcript and list the action items.',
         targetField: 'label' // The field in the target node to update
       }
     }

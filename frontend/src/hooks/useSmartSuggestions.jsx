@@ -33,7 +33,7 @@ const useSmartSuggestions = (nodeId, nodeType, nodeData, parents) => {
         const resolvedSuggestions = events.map(event => {
           let template = event.params.template;
           if (event.type === 'geminiTemplateOffer' && googleMeetParent) {
-            template = template.replace('{{meetingParent.varName}}', googleMeetParent.varName);
+            template = template.replace('{{meetingParent.id}}', googleMeetParent.id);
           }
           return {
             ...event.params,
