@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from tasks import execute_pipeline_task
+from pydantic import BaseModel
+from typing import List, Dict, Any
+from datetime import datetime
+from tasks import execute_pipeline_task, db
 
 app = FastAPI()
 
@@ -17,6 +20,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+class PipelineSchema(BaseModel):
+    name: str
+    nodes: List[Dict[str, Any]]
+    edges: List[Dict[str, Any]]
+
 @app.post("/run-pipeline")
 async def run_pipeline(pipeline: dict):
     # This sends the work to Celery and returns immediately
@@ -28,3 +36,24 @@ async def get_status(task_id: str):
     from celery.result import AsyncResult
     res = AsyncResult(task_id)
     return {"status": res.status, "result": res.result}
+
+@app.post("/pipelines")
+async def save_pipeline(pipeline: PipelineSchema):
+    # This stores your nodes and varNames exactly as they are on the canvas
+    pipeline_data = pipeline.dict()
+    pipeline_data["saved_at"] = datetime.utcnow().isoformat()
+    result = await db.pipelines.insert_one(pipeline_data)
+    return {
+        "id": str(result.inserted_id),
+        "status": "Pipeline saved!",
+        "saved_at": pipeline_data["saved_at"]
+    }
+
+@app.get("/pipelines")
+async def get_pipelines():
+    # Helper to see all your saved NGO or student projects
+    cursor = db.pipelines.find()
+    pipelines = await cursor.to_list(length=100)
+    for p in pipelines:
+        p["_id"] = str(p["_id"])  # Convert ObjectId for JSON compatibility
+    return pipelines

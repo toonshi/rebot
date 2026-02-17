@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import ReactFlow, { 
   addEdge, 
   Background, 
@@ -41,6 +41,12 @@ const App = () => {
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const [executionResult, setExecutionResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [lastSavedTime, setLastSavedTime] = useState(null);
+  const [showSidebar, setShowSidebar] = useState(true);
+
+
+
+
 
   const onNodesChange = useCallback((changes) => setNodes((nds) => applyNodeChanges(changes, nds)), []);
   const onEdgesChange = useCallback((changes) => setEdges((eds) => applyEdgeChanges(changes, eds)), []);
@@ -130,10 +136,64 @@ const App = () => {
     }
   };
 
+  const savePipeline = async () => {
+    const pipelineData = {
+      name: "Sokoline Sync",
+      nodes: nodes,
+      edges: edges,
+    };
+
+    try {
+      const response = await fetch('http://localhost:8000/pipelines', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(pipelineData),
+      });
+      const result = await response.json();
+      setLastSavedTime(new Date(result.saved_at).toLocaleString());
+      alert(`Project Saved! ID: ${result.id}`);
+    } catch (error) {
+      console.error("Save failed:", error);
+      alert("Failed to save pipeline. Check your backend!");
+    }
+  };
+
+  const loadPipeline = useCallback((pipeline) => {
+    // Set the nodes and edges back into the React Flow state
+    setNodes(pipeline.nodes || []);
+    setEdges(pipeline.edges || []);
+    setLastSavedTime(new Date(pipeline.saved_at).toLocaleString());
+    
+    // Close the sidebar if necessary
+    setShowSidebar(false);
+  }, [setNodes, setEdges, setLastSavedTime, setShowSidebar]);
+
+
+
   return (
     <div style={{ display: 'flex', width: '100vw', height: '100vh', position: 'relative' }}>
       <ReactFlowProvider>
-        <Sidebar />
+        {showSidebar && <Sidebar onLoadPipeline={loadPipeline} />}
+        
+        <button 
+          onClick={() => setShowSidebar(!showSidebar)}
+          style={{
+            position: 'absolute',
+            top: '20px',
+            left: '20px',
+            zIndex: 10,
+            padding: '10px 15px',
+            backgroundColor: '#6c757d',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontSize: '12px'
+          }}
+        >
+          {showSidebar ? '← Hide' : '→ Show Nodes'}
+        </button>
         
         <button 
           onClick={onRun}
@@ -154,6 +214,41 @@ const App = () => {
         >
           {isLoading ? 'Running...' : 'Run Pipeline!'}
         </button>
+
+        <button 
+          onClick={savePipeline}
+          style={{
+            position: 'absolute',
+            top: '20px',
+            right: '180px',
+            zIndex: 10,
+            padding: '10px 20px',
+            backgroundColor: '#28a745',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontWeight: 'bold'
+          }}
+        >
+          Save Pipeline
+        </button>
+
+        {lastSavedTime && (
+          <div style={{
+            position: 'absolute',
+            top: '70px',
+            right: '20px',
+            zIndex: 10,
+            padding: '10px',
+            backgroundColor: '#f0f0f0',
+            borderRadius: '5px',
+            fontSize: '12px',
+            color: '#666'
+          }}>
+            Last Saved: {lastSavedTime}
+          </div>
+        )}
 
         <div style={{ flexGrow: 1, height: '100%' }} ref={reactFlowWrapper}>
           <ReactFlow

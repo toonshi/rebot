@@ -15,10 +15,12 @@ services:
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - MONGO_URI=mongodb://mongodb:27017/vision_db
     env_file:
       - ./.env
     depends_on:
       - redis
+      - mongodb
 
   worker:
     build: ./backend
@@ -28,8 +30,24 @@ services:
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - MONGO_URI=mongodb://mongodb:27017/vision_db
     env_file:
       - ./.env
     depends_on:
       - redis
       - backend
+      - mongodb
+
+
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
