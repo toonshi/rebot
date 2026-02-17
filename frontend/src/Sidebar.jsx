@@ -110,6 +110,14 @@ const Sidebar = ({ onLoadPipeline }) => {
               />
               Gmail
             </div>
+            <div 
+              onDragStart={(e) => onDragStart(e, 'pdf')}
+              draggable
+              style={{ ...nodeItemStyle, borderColor: '#ef4444' }}
+            >
+              <div style={{ fontWeight: 'bold', color: '#b91c1c' }}>📄</div>
+              PDF Exporter
+            </div>
           </div>
         )}
 

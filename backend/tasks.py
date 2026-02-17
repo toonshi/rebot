@@ -3,6 +3,7 @@ import re
 from collections import deque
 import google.genai as genai
 from motor.motor_asyncio import AsyncIOMotorClient
+from fpdf import FPDF
 
 from celery_app import celery_app
 
@@ -135,7 +136,37 @@ def execute_pipeline_task(pipeline_data):
 
             results[n_id] = {"status": "sent", "to": recipient, "body": body}
 
+        elif n_type == 'pdf':
+            content = resolve_variables(n_data.get('content', ''), results, nodes)
+            project_name = n_data.get('varName', 'Vision Project')
+            pdf_result = generate_pdf_task(content, project_name)
+            results[n_id] = pdf_result
+
         else:
             results[n_id] = {"output": "Processed non-AI node"}
             
     return {"status": "completed", "final_results": results}
+
+@celery_app.task(name="generate_pdf_task")
+def generate_pdf_task(content, project_name="Vision Project"):
+    pdf = FPDF()
+    pdf.add_page()
+    
+    # Header
+    pdf.set_font("Arial", 'B', 16)
+    pdf.cell(0, 10, f"Report: {project_name}", ln=True, align='C')
+    pdf.ln(10)
+    
+    # Body
+    pdf.set_font("Arial", size=12)
+    # multi_cell handles line wrapping for long AI summaries
+    safe_content = content.encode('latin-1', 'replace').decode('latin-1')
+    pdf.multi_cell(0, 10, txt=safe_content)
+    
+    # Save to a temporary or public directory
+    file_name = f"{project_name.replace(' ', '_')}_Summary.pdf"
+    file_path = f"/app/exports/{file_name}"
+    pdf.output(file_path)
+    
+    # In a real app, you'd return a URL to the file
+    return {"status": "success", "file_url": f"/downloads/{file_name}"}

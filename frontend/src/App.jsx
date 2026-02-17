@@ -12,6 +12,7 @@ import GeminiNode from './nodes/GeminiNode';
 import GmailNode from './nodes/GmailNode';
 import InputNode from './nodes/InputNode';
 import MeetNode from './nodes/MeetNode';
+import PDFNode from './nodes/PDFNode';
 import Sidebar from './Sidebar';
 
 const nodeTypes = {
@@ -19,6 +20,7 @@ const nodeTypes = {
   gmail: GmailNode,
   input: InputNode,
   google_meet: MeetNode,
+  pdf: PDFNode,
 };
 
 const App = () => {
@@ -44,8 +46,20 @@ const App = () => {
   const [lastSavedTime, setLastSavedTime] = useState(null);
   const [showSidebar, setShowSidebar] = useState(true);
 
-
-
+  // Effect to update node data with execution results
+  useEffect(() => {
+    if (executionResult) {
+      setNodes((nds) =>
+        nds.map((node) => ({
+          ...node,
+          data: {
+            ...node.data,
+            ...(executionResult[node.id] || {}), // Merge execution result into node data
+          },
+        }))
+      );
+    }
+  }, [executionResult, setNodes]);
 
 
   const onNodesChange = useCallback((changes) => setNodes((nds) => applyNodeChanges(changes, nds)), []);
@@ -76,7 +90,8 @@ const App = () => {
       gemini: 'Summary',
       gmail: 'Email',
       google_meet: 'Meeting',
-      input: 'Query'
+      input: 'Query',
+      pdf: 'PDF'
     };
 
     const newNode = {

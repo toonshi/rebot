@@ -1,0 +1,7 @@
+I've introduced a second bug in `frontend/src/App.jsx`.
+
+The first bug: I changed `useRef` to `userRef` in the import statement, which should cause a clear compilation/runtime error.
+
+The second bug: In the `onDrop` function, I've changed the `id` generation for new nodes from `getId()` to a hardcoded `id: 0`. This will cause issues with unique keys when adding multiple nodes in React Flow, leading to runtime warnings and potential rendering problems.
+
+You now have two bugs to debug with your girlfriend!

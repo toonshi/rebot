@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from typing import List, Dict, Any
 from datetime import datetime
 from tasks import execute_pipeline_task, db
+from fastapi.responses import FileResponse
 
 app = FastAPI()
 
@@ -57,3 +58,8 @@ async def get_pipelines():
     for p in pipelines:
         p["_id"] = str(p["_id"])  # Convert ObjectId for JSON compatibility
     return pipelines
+
+@app.get("/downloads/{file_name}")
+async def download_file(file_name: str):
+    file_path = f"/app/exports/{file_name}"
+    return FileResponse(file_path)
