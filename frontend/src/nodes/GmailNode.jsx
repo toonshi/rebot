@@ -7,62 +7,59 @@ const GmailNode = ({ id, data }) => {
 
   const updateField = (field, value) => {
     setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id === id) {
-          return { ...node, data: { ...node.data, [field]: value } };
-        }
-        return node;
-      })
+      nds.map((node) =>
+        node.id === id ? { ...node, data: { ...node.data, [field]: value } } : node
+      )
     );
   };
 
   return (
-    <div style={{
-      background: '#fff',
-      border: '2px solid #ea4335', // Gmail Red
-      borderRadius: '8px',
-      padding: '12px',
-      minWidth: '200px',
-      boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
-    }}>
-      {/* NEW: Variable Name Field */}
-      <div style={{ backgroundColor: '#f1f5f9', padding: '4px', marginBottom: '8px', borderRadius: '4px' }}>
-        <label style={{ fontSize: '8px', fontWeight: 'bold', color: '#64748b' }}>VAR NAME</label>
-        <input 
+    <div className="node-card node-card--gmail">
+      {/* Var name */}
+      <div className="node-card__varname">
+        <label className="node-card__varname-label" htmlFor={`${id}-varname`}>Var name</label>
+        <input
+          id={`${id}-varname`}
+          className="node-card__varname-input"
           placeholder="e.g. EmailSender"
-          onChange={(e) => updateField('varName', e.target.value)}
           defaultValue={data.varName}
-          style={{ width: '100%', border: 'none', background: 'transparent', fontSize: '10px', outline: 'none' }}
+          onChange={(e) => updateField('varName', e.target.value)}
         />
       </div>
+
       <Handle type="target" position={Position.Left} />
-      
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" alt="M" style={{ width: '18px', marginRight: '8px' }} />
-        <strong style={{ fontSize: '13px' }}>Gmail</strong>
+
+      {/* Title row */}
+      <div className="node-card__title-row">
+        <img
+          className="node-card__icon"
+          src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg"
+          alt="Gmail"
+        />
+        <span className="node-card__title">Gmail</span>
       </div>
 
-      <div style={{ marginBottom: '8px' }}>
-        <label style={{ fontSize: '9px', fontWeight: 'bold', color: '#888' }}>RECIPIENT</label>
-        <NodeMentionsInput 
+      {/* Recipient */}
+      <div className="node-card__field">
+        <label className="node-card__label">Recipient</label>
+        <NodeMentionsInput
           nodeId={id}
-          placeholder="email@example.com" 
+          placeholder="email@example.com"
           value={data.to}
           onChange={(event, newValue) => updateField('to', newValue)}
         />
       </div>
 
-      <div>
-        <label style={{ fontSize: '9px', fontWeight: 'bold', color: '#888' }}>BODY</label>
-        <NodeMentionsInput 
+      {/* Body */}
+      <div className="node-card__field">
+        <label className="node-card__label">Body</label>
+        <NodeMentionsInput
           nodeId={id}
-          placeholder="Use @ to reference connected nodes" 
+          placeholder="Use @ to reference connected nodes"
           value={data.body}
           onChange={(event, newValue) => updateField('body', newValue)}
         />
       </div>
-      
-      {/* No source handle usually needed for Gmail as it's an end-point */}
     </div>
   );
 };

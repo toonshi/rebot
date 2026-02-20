@@ -7,116 +7,73 @@ const MeetNode = ({ id, data }) => {
 
   const updateField = (field, value) => {
     setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id === id) {
-          return { ...node, data: { ...node.data, [field]: value } };
-        }
-        return node;
-      })
+      nds.map((node) =>
+        node.id === id ? { ...node, data: { ...node.data, [field]: value } } : node
+      )
     );
   };
+
   return (
-    <div style={{
-      background: '#fff',
-      border: '2px solid #24a0ed', // Google Meet Blue
-      borderRadius: '8px',
-      padding: '12px',
-      minWidth: '200px',
-      boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-      fontFamily: 'sans-serif'
-    }}>
-      {/* NEW: Variable Name Field */}
-      <div style={{ backgroundColor: '#f1f5f9', padding: '4px', marginBottom: '8px', borderRadius: '4px' }}>
-        <label style={{ fontSize: '8px', fontWeight: 'bold', color: '#64748b' }}>VAR NAME</label>
-        <input 
+    <div className="node-card node-card--meet">
+      {/* Var name */}
+      <div className="node-card__varname">
+        <label className="node-card__varname-label" htmlFor={`${id}-varname`}>Var name</label>
+        <input
+          id={`${id}-varname`}
+          className="node-card__varname-input"
           placeholder="e.g. MeetingDetails"
-          onChange={(e) => updateField('varName', e.target.value)}
           defaultValue={data.varName}
-          style={{ width: '100%', border: 'none', background: 'transparent', fontSize: '10px', outline: 'none' }}
+          onChange={(e) => updateField('varName', e.target.value)}
         />
       </div>
+
       <Handle type="target" position={Position.Left} />
-      
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <img 
-            src="https://upload.wikimedia.org/wikipedia/commons/9/9b/Google_Meet_icon_%282020%29.svg" 
-            alt="Meet" 
-            style={{ width: '18px', marginRight: '8px' }} 
-          />
-          <strong style={{ fontSize: '13px', color: '#444' }}>Google Meet</strong>
-        </div>
-        <button onClick={() => setShowTools(!showTools)} style={toolButtonStyle}>
-          {showTools ? '-' : '+'}
+
+      {/* Title row */}
+      <div className="node-card__title-row">
+        <img
+          className="node-card__icon"
+          src="https://upload.wikimedia.org/wikipedia/commons/9/9b/Google_Meet_icon_%282020%29.svg"
+          alt="Google Meet"
+        />
+        <span className="node-card__title">Google Meet</span>
+        <button
+          className="node-card__expand-btn"
+          onClick={() => setShowTools(!showTools)}
+          aria-label={showTools ? 'Hide tools' : 'Show tools'}
+          aria-expanded={showTools}
+        >
+          {showTools ? '−' : '+'}
         </button>
       </div>
 
       {showTools && (
-        <div className="tools-drawer" style={{ borderTop: '1px solid #eee', paddingTop: '8px', marginTop: '8px' }}>
-          <p style={{ fontSize: '9px', fontWeight: 'bold', color: '#888', marginBottom: '6px' }}>AVAILABLE PILLS:</p>
-          {/* Clicking this "Pill" copies the reference to the user's clipboard */}
-          <button 
-             onClick={() => navigator.clipboard.writeText(`{{${data.varName || id}.transcript}}`)}
-             style={pillStyle}
+        <div className="node-card__tools-drawer">
+          <p className="node-card__tools-title">Available outputs</p>
+          <button
+            className="node-card__copy-pill"
+            onClick={() => navigator.clipboard.writeText(`{{${data.varName || id}.transcript}}`)}
           >
-            Transcript
+            Copy Transcript ref
           </button>
         </div>
       )}
 
-      <div style={{ marginBottom: '8px' }}>
-        <label style={{ fontSize: '9px', fontWeight: 'bold', color: '#888', display: 'block' }}>MEETING ID / LINK</label>
-        <input 
-          placeholder="meet.google.com/abc-defg-hij" 
-          onChange={(e) => updateField('label', e.target.value)} // Changed to use updateField
+      {/* Meeting link */}
+      <div className="node-card__field">
+        <label className="node-card__label" htmlFor={`${id}-link`}>Meeting ID / Link</label>
+        <input
+          id={`${id}-link`}
+          className="node-card__input"
+          placeholder="meet.google.com/abc-defg-hij"
           defaultValue={data?.label || ''}
-          style={{ 
-            width: '100%', 
-            fontSize: '10px', 
-            padding: '4px', 
-            borderRadius: '4px', 
-            border: '1px solid #ddd',
-            marginTop: '4px',
-            boxSizing: 'border-box'
-          }}
+          onChange={(e) => updateField('label', e.target.value)}
         />
       </div>
 
       <Handle type="source" position={Position.Right} />
     </div>
   );
-};
-
-// Inline styles for the tools button and pills
-const toolButtonStyle = {
-  background: '#e0e0e0',
-  border: 'none',
-  borderRadius: '50%',
-  width: '20px',
-  height: '20px',
-  fontSize: '14px',
-  fontWeight: 'bold',
-  cursor: 'pointer',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  color: '#555',
-  marginLeft: '10px',
-  flexShrink: 0,
-};
-
-const pillStyle = {
-  background: '#3b82f6',
-  color: 'white',
-  border: 'none',
-  borderRadius: '15px',
-  padding: '5px 10px',
-  fontSize: '10px',
-  cursor: 'pointer',
-  fontWeight: 'bold',
-  marginRight: '5px',
-  marginBottom: '5px',
-  display: 'inline-block',
 };
 
 export default MeetNode;

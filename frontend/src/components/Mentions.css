@@ -35,14 +35,14 @@
 }
 
 .mentions-input__suggestions__item--focused {
-  background-color: #eff6ff !important; /* Light blue highlight */
-  color: #3b82f6 !important;
+  background-color: #f5f3ff !important; /* violet-50 */
+  color: #7c3aed !important;
 }
 
 /* The "Pill" look inside the text after selection */
 .mentions-input__highlighter__mention {
-  background-color: #dbeafe;
-  color: #1e40af;
+  background-color: #ede9fe;
+  color: #5b21b6;
   border-radius: 4px;
   padding: 0 2px;
   font-weight: 600;
